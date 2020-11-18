@@ -1,5 +1,6 @@
 package edu.uoc.pac3.oauth
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -8,13 +9,16 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import edu.uoc.pac3.R
+import edu.uoc.pac3.data.SessionManager
 import edu.uoc.pac3.data.TwitchApiService
 import edu.uoc.pac3.data.network.Network
 import edu.uoc.pac3.data.oauth.OAuthConstants
 import kotlinx.android.synthetic.main.activity_oauth.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class OAuthActivity : AppCompatActivity() {
@@ -38,11 +42,10 @@ class OAuthActivity : AppCompatActivity() {
                 .appendQueryParameter("scope", OAuthConstants.scopes.joinToString(separator = " "))
                 .appendQueryParameter("state", OAuthConstants.uniqueState)
                 .build()
-
         return uri
-        // return Uri.EMPTY
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun launchOAuthAuthorization() {
         //  Create URI
         val uri = buildOAuthUri()
@@ -94,10 +97,16 @@ class OAuthActivity : AppCompatActivity() {
         val twitchService = TwitchApiService(Network.createHttpClient(this))
 
         // TODO: Get Tokens from Twitch
-        lifecycle.coroutineScope.launch {
-            var tokens = twitchService.getTokens(authorizationCode)
-        }
+        lifecycleScope.launch {
+            val tokens = twitchService.getTokens(authorizationCode)
+            Log.d(TAG, "Access Token: ${tokens?.accessToken}. Refresh Token: ${tokens?.refreshToken}")
 
         // TODO: Save access token and refresh token using the SessionManager class
+            tokens?.let {
+                val sessionManag = SessionManager(this@OAuthActivity)
+                sessionManag.saveAccessToken(it.accessToken)
+                if (it.refreshToken != null) { sessionManag.saveRefreshToken(it.refreshToken)}
+            }
+        }
     }
 }
