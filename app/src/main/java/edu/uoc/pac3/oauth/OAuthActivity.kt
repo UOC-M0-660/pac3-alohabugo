@@ -99,14 +99,15 @@ class OAuthActivity : AppCompatActivity() {
         // TODO: Get Tokens from Twitch
         lifecycleScope.launch {
             val tokens = twitchService.getTokens(authorizationCode)
+
             Log.d(TAG, "Access Token: ${tokens?.accessToken}. Refresh Token: ${tokens?.refreshToken}")
 
-        // TODO: Save access token and refresh token using the SessionManager class
+            // TODO: Save access token and refresh token using the SessionManager class
             tokens?.let {
                 val sessionManag = SessionManager(this@OAuthActivity)
                 sessionManag.saveAccessToken(it.accessToken)
-                if (it.refreshToken != null) { sessionManag.saveRefreshToken(it.refreshToken)}
-            }
+                if (it.refreshToken != null) { sessionManag.saveRefreshToken(it.refreshToken) }
+                }
         }
     }
 }

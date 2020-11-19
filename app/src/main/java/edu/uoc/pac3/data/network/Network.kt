@@ -23,7 +23,7 @@ object Network {
     // punto de partida para cada solicitud de red, Ktor Http Client
     fun createHttpClient(context: Context): HttpClient {
         // obtenemos accessToken almacenado en la sesion
-        // val accessToken = SessionManager(context).getAccessToken()
+        val accessToken = SessionManager(context).getAccessToken()
 
         return HttpClient(OkHttp) {
             // TODO: Setup HttpClient
@@ -51,13 +51,12 @@ object Network {
                 parameter("api_key", "some_api_key")
                 // Content Type
                 if (this.method != HttpMethod.Get) contentType(ContentType.Application.Json)
-                /*
+
                 if (accessToken != null) {
                     //encabezado de autorización
                     header("Authorization", "Bearer $accessToken")
                 }
 
-                 */
                 accept(ContentType.Application.Json)
             }
         }
