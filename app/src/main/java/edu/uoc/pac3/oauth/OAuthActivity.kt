@@ -1,6 +1,7 @@
 package edu.uoc.pac3.oauth
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import edu.uoc.pac3.data.SessionManager
 import edu.uoc.pac3.data.TwitchApiService
 import edu.uoc.pac3.data.network.Network
 import edu.uoc.pac3.data.oauth.OAuthConstants
+import edu.uoc.pac3.twitch.streams.StreamsActivity
 import kotlinx.android.synthetic.main.activity_oauth.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,18 +98,20 @@ class OAuthActivity : AppCompatActivity() {
         // TODO: Create Twitch Service
         val twitchService = TwitchApiService(Network.createHttpClient(this))
 
+        // creamos el intent para lanzar StreamsActivity
+        val intent = Intent(this, StreamsActivity::class.java)
+
         // TODO: Get Tokens from Twitch
         lifecycleScope.launch {
             val tokens = twitchService.getTokens(authorizationCode)
-
-            Log.d(TAG, "Access Token: ${tokens?.accessToken}. Refresh Token: ${tokens?.refreshToken}")
-
             // TODO: Save access token and refresh token using the SessionManager class
             tokens?.let {
                 val sessionManag = SessionManager(this@OAuthActivity)
                 sessionManag.saveAccessToken(it.accessToken)
                 if (it.refreshToken != null) { sessionManag.saveRefreshToken(it.refreshToken) }
                 }
+            // lanzamos StreamActivity
+            startActivity(intent)
         }
     }
 }

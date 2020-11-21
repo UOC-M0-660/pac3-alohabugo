@@ -3,6 +3,7 @@ package edu.uoc.pac3.data.network
 import android.content.Context
 import android.util.Log
 import edu.uoc.pac3.data.SessionManager
+import edu.uoc.pac3.data.oauth.OAuthConstants
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.*
@@ -48,14 +49,16 @@ object Network {
             }
             // Apply to All Requests
             defaultRequest {
-                parameter("api_key", "some_api_key")
-                // Content Type
-                if (this.method != HttpMethod.Get) contentType(ContentType.Application.Json)
-
+                // parameter("api_key", "some_api_key")
+                // añadir el cliente ID a todas las peticiones
+                header("client_id", OAuthConstants.clientID)
+                // añadir el accessToken a todas las peticiones
                 if (accessToken != null) {
                     //encabezado de autorización
                     header("Authorization", "Bearer $accessToken")
                 }
+                // Content Type
+                if (this.method != HttpMethod.Get) contentType(ContentType.Application.Json)
 
                 accept(ContentType.Application.Json)
             }

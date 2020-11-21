@@ -14,7 +14,8 @@ class SessionManager(context: Context) {
 
     fun isUserAvailable(): Boolean {
         // TODO: Implement
-        return false
+        // return false
+        return mSharedPref.getString("accessTokenKey", null) != null
     }
 
     fun getAccessToken(): String? {
