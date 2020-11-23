@@ -51,7 +51,7 @@ object Network {
             defaultRequest {
                 // parameter("api_key", "some_api_key")
                 // añadir el cliente ID a todas las peticiones
-                header("client_id", OAuthConstants.clientID)
+                header("Client-Id", OAuthConstants.clientID)
                 // añadir el accessToken a todas las peticiones
                 if (accessToken != null) {
                     //encabezado de autorización

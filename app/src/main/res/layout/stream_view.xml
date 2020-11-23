@@ -6,7 +6,7 @@
     android:layout_height="100dp"
     android:layout_margin="@dimen/margin_medium"
     card_view:cardCornerRadius="4dp"
-    card_view:cardBackgroundColor="@color/colorPrimary"
+    card_view:cardBackgroundColor="@color/colorPrimaryDark"
     card_view:cardElevation="2dp" >
 
     <LinearLayout
@@ -19,6 +19,8 @@
             android:id="@+id/user_img"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:padding="@dimen/margin_xsmall"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_user" />
 
         <LinearLayout
@@ -31,16 +33,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_xxsmall"
+                android:padding="@dimen/margin_xxsmall"
                 android:textAppearance="?attr/textAppearanceListItem"
-                android:text="Title"/>
+                android:text="Title"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/userName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_xxsmall"
+                android:padding="@dimen/margin_xxsmall"
                 android:textAppearance="?attr/textAppearanceListItem"
-                android:text="User Name" />
+                android:text="User Name"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
