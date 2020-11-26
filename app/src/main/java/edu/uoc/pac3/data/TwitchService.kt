@@ -33,16 +33,16 @@ class TwitchApiService(private val httpClient: HttpClient) {
         Log.d(TAG, "Access Token: ${response.accessToken}. Refresh Token: ${response.refreshToken}")
 
         return response
+
     }
 
     suspend fun getRefreshToken(refreshToken: String):  OAuthTokensResponse? {
         // solicitud POST para refreshToken
-        val response = httpClient.post<OAuthTokensResponse>(Endpoints.epToken) {
+        return httpClient.post<OAuthTokensResponse>(Endpoints.epToken) {
             parameter("client_secret", OAuthConstants.clientSecret)
             parameter("refresh_token", refreshToken)
             parameter("grant_type", "refresh_token")
         }
-        return response
     }
 
     /// Gets Streams on Twitch
@@ -50,9 +50,16 @@ class TwitchApiService(private val httpClient: HttpClient) {
     suspend fun getStreams(cursor: String? = null): StreamsResponse? {
         // TODO("Get Streams from Twitch")
         // solicitud GET para obtener los streams de Twitch
-        return httpClient.get<StreamsResponse>(Endpoints.epStreams)
-
-        // TODO("Support Pagination")
+        if (cursor == null) {
+            return httpClient.get<StreamsResponse>(Endpoints.epStreams)
+        } else {
+            // TODO("Support Pagination")
+            // pasamos cursor como parámetro para la paginación
+            return httpClient.get<StreamsResponse>(Endpoints.epStreams) {
+                parameter("first", 20)
+                parameter("after", cursor)
+            }
+        }
     }
 
     /// Gets Current Authorized User on Twitch

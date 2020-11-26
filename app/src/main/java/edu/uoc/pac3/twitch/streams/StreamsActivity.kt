@@ -19,14 +19,39 @@ class StreamsActivity : AppCompatActivity() {
     private val TAG = "StreamsActivity"
     private lateinit var twitchService: TwitchApiService
     private lateinit var adapter: StreamsListAdapter
+    private lateinit var sessionManag: SessionManager
+    // paginacion
+    private var cursor: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_streams)
         // Init RecyclerView
         initRecyclerView()
+        // Inicializamos variable twitchService
+        twitchService = TwitchApiService(Network.createHttpClient(this))
+        // Inicializamos variable sessionManag
+        sessionManag = SessionManager(this@StreamsActivity)
+
         // TODO: Get Streams
-        getStreams()
+        lifecycleScope.launch {
+            try {
+                getStreams()
+            } catch (e: UnauthorizedException) {
+                try {
+                    // excepction "No autorizado"
+                    Log.d(TAG, "UnauthorizedException: refreshAccessToken")
+                    // refrescamos token
+                    refreshAccessToken()
+                    // volvemos a realizar la petición
+                    getStreams()
+                } catch (e: UnauthorizedException) {
+                    Log.d(TAG, "UnauthorizedException: clear tokens")
+
+                }
+
+            }
+        }
 
     }
 
@@ -39,36 +64,36 @@ class StreamsActivity : AppCompatActivity() {
         // Init Adapter
         adapter = StreamsListAdapter(ArrayList())
         mRecyclerView.adapter = adapter
+        // Paginacion - solicitar los siguientes 20 streams
+        mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                // Si se llega al final de la lista y no se puede realizar scroll vertical
+                // y ademas el nuevo estado es de no desplazamiento
+                if (!mRecyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    // solicitamos streams
+                    getStreams()
+                }
+            }
+        })
     }
 
     private fun getStreams() {
-        // inicializamos variable twitchService
-        twitchService = TwitchApiService(Network.createHttpClient(this))
         lifecycleScope.launch {
-            try {
-                // obtener el listado de streams y mostrarlos en recyclerView
-                val streams = twitchService.getStreams()
-                streams?.data?.let {
-                    adapter.addStreams(it)
-                }
-            } catch (e: ClientRequestException) {
-                Log.d(TAG, getString(R.string.error_streams))
-
-                // refrescamos token
-                refreshAccessToken()
-
-                // volvemos a realizar la petición
-                val streams = twitchService.getStreams()
-                streams?.data?.let {
-                    adapter.addStreams(it)
-                }
+            // obtener el listado de streams y mostrarlos en recyclerView
+            val streams = twitchService.getStreams(cursor)
+            streams?.data?.let {
+                adapter.addStreams(it)
+            }
+            // paginacion
+            streams?.pagination?.cursor?.let {
+                cursor = it
             }
         }
     }
 
     private suspend fun refreshAccessToken() {
         // refresh token using the SessionManager class
-        val sessionManag = SessionManager(this@StreamsActivity)
         try {
             val refreshToken = sessionManag.getRefreshToken()
             val response = refreshToken?.let { twitchService.getRefreshToken(it) }
