@@ -14,4 +14,5 @@ object Endpoints {
     private const val twitchBaseUrl = "https://api.twitch.tv/helix"
     // TODO: Add all remaining endpoints
     const val epStreams = twitchBaseUrl + "/streams"
+    const val epUser = twitchBaseUrl + "/users"
 }

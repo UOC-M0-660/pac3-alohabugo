@@ -1,16 +1,22 @@
 package edu.uoc.pac3.twitch.streams
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import edu.uoc.pac3.LaunchActivity
 import edu.uoc.pac3.R
 import edu.uoc.pac3.data.SessionManager
 import edu.uoc.pac3.data.TwitchApiService
 import edu.uoc.pac3.data.network.Network
 import edu.uoc.pac3.data.oauth.UnauthorizedException
+import edu.uoc.pac3.twitch.profile.ProfileActivity
 import io.ktor.client.features.*
 import kotlinx.coroutines.launch
 
@@ -31,7 +37,7 @@ class StreamsActivity : AppCompatActivity() {
         // Inicializamos variable twitchService
         twitchService = TwitchApiService(Network.createHttpClient(this))
         // Inicializamos variable sessionManag
-        sessionManag = SessionManager(this@StreamsActivity)
+        sessionManag = SessionManager(this)
 
         // TODO: Get Streams
         lifecycleScope.launch {
@@ -46,10 +52,13 @@ class StreamsActivity : AppCompatActivity() {
                     // volvemos a realizar la petición
                     getStreams()
                 } catch (e: UnauthorizedException) {
+                    // limpiamos tokens
                     Log.d(TAG, "UnauthorizedException: clear tokens")
-
+                    sessionManag.clearAccessToken()
+                    sessionManag.clearRefreshToken()
+                    // volvemos a la pantalla inicial
+                    startActivity(Intent(this@StreamsActivity, LaunchActivity::class.java))
                 }
-
             }
         }
 
@@ -101,6 +110,24 @@ class StreamsActivity : AppCompatActivity() {
             response?.refreshToken?.let { sessionManag.saveRefreshToken(it) }
         } catch (e: ClientRequestException) {
             Log.d(TAG, "Error refreshing token")
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // opciones del menu main_menu
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            // open activity: ProfileActivity
+            R.id.menu_item_profile -> {
+                startActivity(Intent(this, ProfileActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
