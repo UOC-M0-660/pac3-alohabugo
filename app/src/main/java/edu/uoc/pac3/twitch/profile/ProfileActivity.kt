@@ -63,7 +63,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun getUserData() {
         lifecycleScope.launch {
-            // obtener datos del usuario y mostrarlos
+            // obtener datos del usuario logeado y mostrarlos
             val user = twitchService.getUser()
             showUserProfile(user)
         }
@@ -77,6 +77,7 @@ class ProfileActivity : AppCompatActivity() {
                     .into(imageView)
             userNameTextView.text = it.userName
             userDescriptionEditText.setText(it.description)
+            viewsText.text = resources.getString(R.string.views_text, it.viewCount)
         }
     }
 

@@ -69,6 +69,7 @@ class TwitchApiService(private val httpClient: HttpClient) {
         // TODO("Get User from Twitch")
         // obtenemos la lista de usuarios logeados
         val response = httpClient.get<UserResponse>(Endpoints.epUser)
+        Log.d(TAG, "User: ${response.data?.get(0)}")
         // devolvemos el primer usuario de la lista que corresponde al usuario logeado
         return response.data?.get(0)
     }

@@ -10,12 +10,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import edu.uoc.pac3.LaunchActivity
 import edu.uoc.pac3.R
 import edu.uoc.pac3.data.SessionManager
 import edu.uoc.pac3.data.TwitchApiService
 import edu.uoc.pac3.data.network.Network
 import edu.uoc.pac3.data.oauth.UnauthorizedException
+import edu.uoc.pac3.oauth.LoginActivity
 import edu.uoc.pac3.twitch.profile.ProfileActivity
 import io.ktor.client.features.*
 import kotlinx.coroutines.launch
@@ -42,10 +42,11 @@ class StreamsActivity : AppCompatActivity() {
         // TODO: Get Streams
         lifecycleScope.launch {
             try {
+                // obtener los streams
                 getStreams()
             } catch (e: UnauthorizedException) {
                 try {
-                    // excepction "No autorizado"
+                    // excepction "401 Unautorized"
                     Log.d(TAG, "UnauthorizedException: refreshAccessToken")
                     // refrescamos token
                     refreshAccessToken()
@@ -56,8 +57,8 @@ class StreamsActivity : AppCompatActivity() {
                     Log.d(TAG, "UnauthorizedException: clear tokens")
                     sessionManag.clearAccessToken()
                     sessionManag.clearRefreshToken()
-                    // volvemos a la pantalla inicial
-                    startActivity(Intent(this@StreamsActivity, LaunchActivity::class.java))
+                    // volvemos a la pantalla de login
+                    startActivity(Intent(this@StreamsActivity, LoginActivity::class.java))
                 }
             }
         }
