@@ -14,14 +14,22 @@ En ese caso la actualización de la recyclerview lanzaría una excepción, ya qu
 
 ##### Describe brevemente los principales estados del ciclo de vida de una Activity.
 **Constructor**: La actividad, al ser una clase, tiene su propio constructor, que se ejecuta cada vez que se crea un nuevo objeto (una nueva versión de la actividad). Es importante tener en cuenta que hasta que no finaliza la ejecución de este método, la actividad no está realmente creada.
+
 **onCreate**: Se ejecuta en cuanto se crea la actividad, después del constructor. Es el lugar idóneo para inicializar la actividad: crear las vistas que contendrá, cargar los datos que se vayan a visualizar, etc.
-Este método recibe un objeto de tipo Bundle. Si no es la primera vez que se crea esta actividad, es decir, si la actividad ya ha existido antes pero fue destruida, el objeto Bundle contendrá lo necesario para restaurar su estado anterior de forma que el usuario se encuentre la actividad tal y como se la espera. 
-**onStart**: Este método se ejecuta cuando el sistema tiene intención de hacer visible la actividad. Se suele utilizar para crear aquellos procesos cuyo objetivo es actualizar la interfaz de usuario: animaciones, temporizadores, localización GPS etc. 
-**onResume**: Este método se ejecuta justo antes de que la actividad sea completamente visible y el usuario pueda empezar a interactuar con ella. Es el sitio ideal para iniciar animaciones, acceder a recursos que se tienen que utilizar de forma exclusiva (como la cámara), etc. De esta forma no utilizamos los recursos más valiosos hasta que realmente van a ser necesarios. 
+Este método recibe un objeto de tipo Bundle. Si no es la primera vez que se crea esta actividad, es decir, si la actividad ya ha existido antes pero fue destruida, el objeto Bundle contendrá lo necesario para restaurar su estado anterior de forma que el usuario se encuentre la actividad tal y como se la espera.
+
+**onStart**: Este método se ejecuta cuando el sistema tiene intención de hacer visible la actividad. Se suele utilizar para crear aquellos procesos cuyo objetivo es actualizar la interfaz de usuario: animaciones, temporizadores, localización GPS etc.
+
+**onResume**: Este método se ejecuta justo antes de que la actividad sea completamente visible y el usuario pueda empezar a interactuar con ella. Es el sitio ideal para iniciar animaciones, acceder a recursos que se tienen que utilizar de forma exclusiva (como la cámara), etc. De esta forma no utilizamos los recursos más valiosos hasta que realmente van a ser necesarios.
+
 **onPause**: Se ejecuta cuando el usuario deja de poder interactuar con la actividad actual, porque va a ser reemplazada por otra (la anterior o una que se superponga). Es, por lo tanto, el sitio ideal para detener todo lo que se ha activado en onResume y liberar los recursos de uso exclusivo (dado que podría necesitarlos la nueva actividad).
+
 **onStop**: Se llama a este método cuando la actividad ha sido ocultada totalmente por otra que ya está interactuando con el usuario. Aquí se suelen destruir los procesos creados en el método onStart, para liberar recursos y permitir que la actividad que está interactuando actualmente con el usuario pueda ir lo más fluida posible.
+
 **onRestart**: Este método se ejecuta cuando una actividad había dejado de ser completamente visible pero tiene que mostrarse de nuevo (sin que haya sido destruida entre tanto, claro). Su uso no es tan habitual como el del resto de métodos.
+
 **onDestroy**: El sistema ejecuta este método cuando ya no tiene intención de reutilizar más el objeto que contiene la actividad, ya sea porque se ha eliminado la actividad desde el propio código o porque el sistema está tratando de liberar memoria. Aquí ya no se puede hacer otra cosa que destruir los objetos, hilos y demás que hayamos creado en onCreate, para no dejar basura atrás.
+
 **finalize**: Este método es el destructor de la clase. Se ejecuta cuando el recolector de basura va a eliminar el objeto.
 
 
