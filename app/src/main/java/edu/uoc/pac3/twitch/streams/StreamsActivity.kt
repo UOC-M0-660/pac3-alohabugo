@@ -59,6 +59,7 @@ class StreamsActivity : AppCompatActivity() {
                     sessionManag.clearRefreshToken()
                     // volvemos a la pantalla de login
                     startActivity(Intent(this@StreamsActivity, LoginActivity::class.java))
+                    finish()
                 }
             }
         }

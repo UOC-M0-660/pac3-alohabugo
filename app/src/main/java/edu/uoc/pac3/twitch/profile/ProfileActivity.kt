@@ -97,6 +97,7 @@ class ProfileActivity : AppCompatActivity() {
             sessionManag.clearRefreshToken()
         }
         startActivity(Intent(this, LaunchActivity::class.java))
+        finish()
     }
 
     private suspend fun refreshAccessToken() {

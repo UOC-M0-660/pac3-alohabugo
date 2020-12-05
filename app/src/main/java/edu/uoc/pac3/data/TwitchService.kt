@@ -1,6 +1,5 @@
 package edu.uoc.pac3.data
 
-import android.net.Uri
 import android.util.Log
 import edu.uoc.pac3.data.network.Endpoints
 import edu.uoc.pac3.data.oauth.OAuthConstants
@@ -11,7 +10,7 @@ import edu.uoc.pac3.data.user.User
 import edu.uoc.pac3.data.user.UserResponse
 import io.ktor.client.*
 import io.ktor.client.request.*
-import java.lang.Exception
+import kotlin.Exception
 
 /**
  * Created by alex on 24/10/2020.
@@ -37,12 +36,16 @@ class TwitchApiService(private val httpClient: HttpClient) {
 
     }
 
-    suspend fun getRefreshToken(refreshToken: String):  OAuthTokensResponse? {
+    suspend fun getRefreshToken(refreshToken: String): OAuthTokensResponse? {
         // solicitud POST para refreshToken
-        return httpClient.post<OAuthTokensResponse>(Endpoints.epToken) {
-            parameter("client_secret", OAuthConstants.clientSecret)
-            parameter("refresh_token", refreshToken)
-            parameter("grant_type", "refresh_token")
+        try {
+            return httpClient.post<OAuthTokensResponse>(Endpoints.epToken) {
+                parameter("client_secret", OAuthConstants.clientSecret)
+                parameter("refresh_token", refreshToken)
+                parameter("grant_type", "refresh_token")
+            }
+        } catch (e: Exception) {
+            throw UnauthorizedException
         }
     }
 
@@ -51,15 +54,19 @@ class TwitchApiService(private val httpClient: HttpClient) {
     suspend fun getStreams(cursor: String? = null): StreamsResponse? {
         // TODO("Get Streams from Twitch")
         // solicitud GET para obtener los streams de Twitch
-        if (cursor == null) {
-            return httpClient.get<StreamsResponse>(Endpoints.epStreams)
-        } else {
-            // TODO("Support Pagination")
-            // pasamos cursor como parámetro para la paginación
-            return httpClient.get<StreamsResponse>(Endpoints.epStreams) {
-                parameter("first", 20)
-                parameter("after", cursor)
+        try {
+            if (cursor == null) {
+                return httpClient.get<StreamsResponse>(Endpoints.epStreams)
+            } else {
+                // TODO("Support Pagination")
+                // pasamos cursor como parámetro para la paginación
+                return httpClient.get<StreamsResponse>(Endpoints.epStreams) {
+                    parameter("first", 20)
+                    parameter("after", cursor)
+                }
             }
+        } catch (e: Exception) {
+            throw UnauthorizedException
         }
     }
 
